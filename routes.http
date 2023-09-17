@@ -21,9 +21,21 @@ Content-Type: image/png
 ###
 
 # @name create-transcription
-POST http://localhost:3333/videos/47a3d153-1086-4818-9ac1-2e10873bdc4a/transcription
+POST http://localhost:3333/videos/8ccfefcc-44aa-42f4-b1d9-866963cf2ec1/transcription
 Content-Type: application/json
 
 {
-  "prompt": "Avenged Sevenfold Song"
+  "prompt": "A person reading some text"
+}
+
+###
+
+# @name generate-ai-completion
+POST http://localhost:3333/ai/complete
+Content-Type: application/json
+
+{
+  "videoID": "8ccfefcc-44aa-42f4-b1d9-866963cf2ec1",
+  "temperature": 0.5,
+  "template": "Provide me a summary of this text: '''{transcription}'''"
 }

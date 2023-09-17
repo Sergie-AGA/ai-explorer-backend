@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { createReadStream } from "node:fs";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
+import { openai } from "../lib/openai";
 
 export async function createTranscriptionRoute(app: FastifyInstance) {
   app.post("/videos/:videoID/transcription", async (req) => {
@@ -25,9 +26,28 @@ export async function createTranscriptionRoute(app: FastifyInstance) {
 
     const audioReadStream = createReadStream(videoPath);
 
-    return {
-      videoID,
+    const response = await openai.audio.transcriptions.create({
+      file: audioReadStream,
+      model: "whisper-1",
+      language: "en",
+      response_format: "json",
+      temperature: 0,
       prompt,
+    });
+
+    const transcription = response.text;
+
+    await prisma.video.update({
+      where: {
+        id: videoID,
+      },
+      data: {
+        transcription: transcription,
+      },
+    });
+
+    return {
+      transcription,
     };
   });
 }
